@@ -13,6 +13,18 @@ class QuizPage extends StatefulWidget {
   State<QuizPage> createState() => _QuizPageState();
 }
 
+String getLetter(int index) {
+  // This function returns letters in alphabetical order: A, B, C, ...
+  // Index 0 corresponds to 'A', index 1 corresponds to 'B', and so on.
+  if (index >= 0 && index < 36) {
+    return String.fromCharCode('A'.codeUnitAt(0) + index);
+  } else {
+    // If the index is out of range (for example, beyond option D),
+    // it just returns blank.
+    return ' ';
+  }
+}
+
 class _QuizPageState extends State<QuizPage> {
   int totalQuestions = 5;
   int totalOptions = 4;
@@ -78,7 +90,7 @@ class _QuizPageState extends State<QuizPage> {
   Widget _buildResultDialog(BuildContext context) {
     return AlertDialog(
       title: Text('Results', style: Theme.of(context).textTheme.displayLarge),
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Colors.blue.shade300,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,100 +132,111 @@ class _QuizPageState extends State<QuizPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.indigo,
       appBar: AppBar(
-        title: Text(quiz.name),
-        backgroundColor: Colors.indigo,
+        title: Text(quiz.name, style: const TextStyle(color: Colors.white),),
+        backgroundColor: Colors.blue.shade200,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white), // Change the arrow color to white
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 30),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: LinearProgressIndicator(
-                color: Colors.amber.shade900,
-                value: (progressIndex / totalQuestions),
-                minHeight: 20,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/img/capitals_map.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: LinearProgressIndicator(
+                  color: Colors.lightGreen,
+                  value: (progressIndex / totalQuestions),
+                  minHeight: 20,
+                ),
               ),
             ),
-          ),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 450),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
-              child: quiz.questions.isNotEmpty
-                  ? Card(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(15),
-                            child: Text(
-                              quiz.questions[questionIndex].question,
-                              style: Theme.of(context).textTheme.displayLarge,
-                            ),
-                          ),
-                          Flexible(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: totalOptions,
-                              itemBuilder: (_, index) {
-                                return Container(
-                                  margin: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.indigo.shade100,
-                                        width: 2),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: ListTile(
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(15),
-                                      ),
-                                    ),
-                                    leading: Text(
-                                      '${index + 1}',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    title: Text(
-                                      quiz.questions[questionIndex]
-                                          .options[index],
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    onTap: () {
-                                      _optionSelected(quiz
-                                          .questions[questionIndex]
-                                          .options[index]);
-                                    }, // Effect of clicking on the answer to the question
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 450),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                child: quiz.questions.isNotEmpty
+                    ? Card(
+                  elevation: 0,
+                  color: Colors.blue.withOpacity(0.6),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(15),
+                        child: Text(
+                          quiz.questions[questionIndex].question,
+                          style: Theme.of(context).textTheme.displayLarge,
+                        ),
                       ),
-                    )
-                  : const CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                    ),
+                      Flexible(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: totalOptions,
+                          itemBuilder: (_, index) {
+                            return Container(
+                              margin: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.indigo.shade100,
+                                    width: 2),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: ListTile(
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15),
+                                  ),
+                                ),
+                                leading: Text(
+                                  getLetter(index), // Use the getLetter function
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                title: Text(
+                                  quiz.questions[questionIndex]
+                                      .options[index],
+                                  style:
+                                  Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                onTap: () {
+                                  _optionSelected(quiz
+                                      .questions[questionIndex]
+                                      .options[index]);
+                                }, // Effect of clicking on the answer to the question
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                    : const CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              ),
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              _optionSelected('Skipped');
-            },
-            child: Text(
-              'Skip',
-              style: Theme.of(context).textTheme.bodyLarge,
+            TextButton(
+              onPressed: () {
+                _optionSelected('Skipped');
+              },
+              child: Text(
+                'Skip',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontSize: 24,
+                )
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
