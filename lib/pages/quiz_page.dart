@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quiz_app/classes/question.dart';
 import 'package:quiz_app/classes/quiz.dart';
+import 'package:quiz_app/pages/results_page.dart';
 
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key});
@@ -21,7 +22,7 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<void> readJson() async {
     // Some things
-    final String response = await rootBundle.loadString('assets/paises.json');
+    final String response = await rootBundle.loadString('assets/countries.json');
     final List<dynamic> data = await json.decode(response);
     List<int> optionList = List<int>.generate(data.length, (i) => i);
     List<int> questionsAdded = [];
@@ -82,12 +83,37 @@ class _QuizPageState extends State<QuizPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total questions: $totalQuestions'),
-          Text('Correct questions: ${quiz.right}'),
-          Text('Incorrect questions: ${(totalQuestions - quiz.right)}'),
-          Text('Percentage: ${quiz.percent}%'),
+          Text('Total questions: $totalQuestions',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Text('Correct questions: ${quiz.right}',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Text('Incorrect questions: ${(totalQuestions - quiz.right)}',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Text('Percentage: ${quiz.percent}%',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         ],
-      )
+      ),
+      actions: [
+          TextButton(
+        onPressed: () {
+            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: ((context) => ResultsPage(quiz: quiz,))
+              ),
+            );
+          },
+          child: Text(
+              'See Answers',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        )
+      ],
     );
   }
 
